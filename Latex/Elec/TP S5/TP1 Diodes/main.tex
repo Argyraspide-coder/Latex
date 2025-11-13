@@ -1,0 +1,490 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage{siunitx}
+\usepackage[european, straightvoltages, RPvoltages]{circuitikz}
+\usetikzlibrary{babel}
+
+\counterwithin{figure}{section}
+\counterwithin{figure}{subsection}
+\usepackage[hidelinks]{hyperref}
+
+% chktex-file 1
+% chktex-file 26
+% chktex-file 8
+% chktex-file 35
+% chktex-file 24
+
+\title{- Rapport de Travaux Pratiques -\\
+Élec. Analogique : \\
+TP1 - Diode }
+\author{Gabriel Châtelain - Louison Bost}
+\date{Novembre-Décembre 2024}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\bigskip
+
+\textbf{Toutes les références de la table sont liées vers leurs parties correspondantes}
+
+\newpage
+
+\section{Introduction}
+
+Dans ce TP, on se propose d'étudier plusieurs circuits mettant en jeux plusieurs types de diode. Le but sera de mesurer leurs caractéristiques, puis de caractériser les circuits correspondants à l'aide de mesures et d'analyses théoriques.
+
+\section{Diodes de Signal}
+
+\subsection{Diode de signal rapide 1N4148}
+
+On étudie le circuit suivant :
+\begin{center}
+\begin{circuitikz}
+  \draw (0,0) to[vsource,v^=VIN $E$,i=$i$] (0,3)
+        to[R, l^= {$ R_1 = 470~\Omega$},v_={$U_R$} ] (3,3)
+        to[D,l=D1, l=\footnotesize 1N4148, v_ = {$U_D$}] (3,0)
+        -- (0,0);
+  \draw (1.5,0) node[ground]{};
+    
+\end{circuitikz}
+\end{center}
+
+\subsubsection{Caractéristique}
+
+On établi la caractéristique suivante : 
+
+\begin{figure}[h]
+   \centering
+    \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+    \caption{Caractéristique de la Diode}
+    \label{fig : Caractéristique diode}
+\end{figure}
+
+
+
+On relève alors les valeurs :
+\[V_0 = \text{ et } R_f=\]
+
+\subsubsection{Comparaison avec les valeurs Datasheet}
+
+On trouve sur internet que \[V_{0,ref} = \text{ et } R_{f,ref}=\]
+
+En considérant les incertitudes de mesures, on calcule alors le Z-score :
+
+\[Z=\frac{|x_{exp}-x_{ref}|}{u}\]
+
+\[Z_{V_0}~=~A~;~Z_{R_f}~=~A~\]
+
+La mesure est donc validée ($Z$ $\leq$ 2).
+
+\newpage
+
+\subsection{Redressement Mono-Alternance}
+
+On étudie le circuit suivant :
+\begin{center}
+\begin{circuitikz}
+  \draw (0,0) to[sI,v^={$u_4$},i={$i$}] (0,3)
+        to[D,l=D1, l=\footnotesize 1N4148, v_ = {$u_D$}] (5,3)
+        to[R, l^= {$ R_1 = 470~\Omega$},v_={$u_R$} ] (5,0)
+        -- (0,0);
+  \draw (2.5,0) node[ground]{};
+  \node[align=right] at (-2,0.5) {sin.\\ $V_A = 10V$\\ $f=1.0~\text{kHz}$};    
+\end{circuitikz}
+\end{center}
+
+\subsubsection{Comportement sur une période}
+
+On observe le comportement suivant sur une période :
+
+\begin{figure}[h]
+   \centering
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \caption{Tension aux bornes de $R_1$ sur une période}
+     \label{fig : Ref Name}
+\end{figure}
+
+On remarque alors que de $t_0$ à $t_1$, la tension appliquée $V_4$ est suffisante pour que le courant passe dans la diode.
+Autrement, la diode est bloquée, aucun courant ne passe.
+
+\subsubsection{Chargement d'une capacité}
+
+On modifie le circuit de la façon suivante :
+
+\begin{center}
+    \begin{circuitikz}
+        \draw (0,0) to[sI,v^={$v_4$},i={$i$}] (0,3)
+        to[D,l=D1, l=\footnotesize 1N4148, v_ = {$u_D$}] (5,3)
+        to[R, l^= {$ R_1 = 470~\Omega$},v_={$u_R$} ] (5,0)
+        -- (0,0);
+        \draw (5,3) to (8.5,3)
+        to[C,l={C= $1.0\mu F$},v_={$u_C$}] (8.5,0)
+        -- (0,0);
+
+  \draw (2.5,0) node[ground]{};
+  \node[align=right] at (-2,0.5) {sin.\\ $V_A = 10V$\\ $f=1.0~\text{kHz}$};     
+    \end{circuitikz}
+\end{center}
+
+On relève alors les tensions suivantes sur une période :
+
+
+On peut alors remarquer que le comportement du circuit se décline en 3 étapes répétées :
+
+\begin{itemize}
+    \item Situation initiale : $v_4 = 0$ la diode est bloquée, C est en décharge dans $R_1$
+    \item $v_4$ augmente et $v_4 \geq V_0$, la tension de seuil de D ; la diode est passante,
+                le condensateur diminue la vitesse de sa décharge puis entre en charge.
+    \item $v_4$ diminue puis $v_4 \leq V_0$, la diode est bloquée, C se décharge dans $R_1$ ; on est ramené à la situation initiale
+\end{itemize}
+
+\newpage
+
+\subsection{Redressement bi-alternance}
+
+On travaille à présent sur le circuit suivant :
+
+\begin{center}
+    \begin{circuitikz}
+        \draw (0,0) to[sI,v^={$v_3$},i={$i$}] (0,3)
+        to (3,3)
+        to (3,2.5);
+        \draw (0,0)
+        to (3,0)
+        to (3,0.5);
+
+        \draw (2,1.5) to[D,l^={$D_1$}] (3,2.5);
+        \draw (3,2.5) to[D,l^={$D_2$}] (4,1.5);
+        \draw (2,1.5) to[D,l_={$D_3$}] (3,0.5);
+        \draw (3,0.5) to[D,l_={$D_4$}] (4,1.5);
+
+        \draw (2,1.5)
+        to (1,1.5)
+        to (1,-1)
+        to (8,-1) ;
+
+        \draw (8,3) to[R,v={$u_{R_3}$},invert,l={R=1 k$\Omega$}] (8,-1);
+        
+        \draw (8,3)
+        to (6,3)
+        to (6,1.5)
+        to (4,1.5);
+
+          \draw (0.5,0) node[ground]{};
+    \end{circuitikz}
+\end{center}
+
+On précise que toutes les diodes ont le même modèle que celle exploitée précedement dans le TP.
+
+On relève alors les observations suivantes :
+
+\begin{figure}[h]
+     \centering
+         \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+         \caption{$u_{R_3}$ sur une période}
+         \label{fig : Ref Name}
+\end{figure}
+
+\newpage
+
+On distingue 4 temps sur une période complète :
+
+\bigskip
+
+\begin{itemize}
+  \item Situation initiale : $v_3$ = 0, aucun courant ne circule, toutes les diodes sont bloquées
+  \item $v_3$ augmente, puis $v_3$ $\geq$ 2$V_0$, alors les diodes $D_2$ et $D_3$ sont passantes, un courant circule dans R !
+  \item $v_3$ atteint un maximum puis diminue jusqu'à $v_3$ $\leq$ 2$V_0$, les diodes redeviennent toutes bloquantes, aucun courant ne circule.
+  \item $v_3$ diminue puis $v_3$ $\leq$ -2$V_0$, alors les diodes $D_1$ et $D_4$ sont passantes, un courant circule à nouveau dans R !
+  \item $v_3$ atteint un minimum puis augmente jusqu'à $v_3$ $\geq$ -2$V_0$, les diodes redeviennent toutes bloquantes, aucun courant ne circule.
+              On est reconduis à la situation initiale.
+\end{itemize}
+
+\subsubsection{Charge d'un condensateur en Redressement bi-alternance}
+
+On travaille à présent sur le circuit suivant :
+
+\begin{center}
+    \begin{circuitikz}
+        \draw (0,0) to[sI,v^={$v_3$},i={$i$}] (0,3)
+        to (3,3)
+        to (3,2.5);
+        \draw (0,0)
+        to (3,0)
+        to (3,0.5);
+
+        \draw (2,1.5) to[D,l^={$D_1$}] (3,2.5);
+        \draw (3,2.5) to[D,l^={$D_2$}] (4,1.5);
+        \draw (2,1.5) to[D,l_={$D_3$}] (3,0.5);
+        \draw (3,0.5) to[D,l_={$D_4$}] (4,1.5);
+
+        \draw (2,1.5) to (1,1.5)
+        to (1,-1)
+        to (8,-1) ;
+
+        \draw (8,3) to[R,l={R=1 k$\Omega$},v={$u_{R_3}$},invert] (8,-1) ;
+
+        \draw (8,3)
+        to (6,3)
+        to (6,1.5)
+        to (4,1.5);
+
+        \draw (0.5,0) node[ground]{};
+        \draw (8,-1) to (12,-1);
+
+        \draw (12,3) to[C,l={C= $1.0\mu F$},v_={$u_C$}] (12,-1) ;
+        \draw (12,3) to (8,3);
+    \end{circuitikz}
+\end{center}
+
+\begin{figure}[h]
+   \centering
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \caption{Tension $u_C$ sur une période de $v_3$}
+     \label{fig : Redressement bi-alternance capacité}
+\end{figure}
+
+\bigskip
+
+\textbf{Analyse}
+
+On distingue 4 temps sur une période complète :
+
+\bigskip
+
+\begin{itemize}
+  \item Situation initiale : $v_3$ = 0, aucun courant ne circule, toutes les diodes sont bloquées, $C$ se décharge dans $R$.
+  \begin{center}
+    \begin{circuitikz}[scale=0.70]
+        \draw (0,0) to[sI,v^={$v_3$},i={$i$}] (0,3)
+        to (3,3)
+        to (3,2.5);
+        \draw (0,0)
+        to (3,0)
+        to (3,0.5);
+
+        \draw (2,1.5) to (1,1.5)
+        to (1,-1)
+        to (8,-1) ;
+
+        \draw (8,3) to[R,l={R=1 k$\Omega$},v={$u_{R_3}$},invert] (8,-1) ;
+
+        \draw (8,3)
+        to (6,3)
+        to (6,1.5)
+        to (4,1.5);
+
+        \draw (0.5,0) node[ground]{};
+        \draw (8,-1) to (12,-1);
+
+        \draw (12,3) to[C,l={C= $1.0\mu F$},v_={$u_C$}] (12,-1) ;
+        \draw (12,3) to (8,3);
+    \end{circuitikz}
+\end{center}
+
+\bigskip
+
+
+  \item $v_3$ augmente, puis $v_3$ $\geq$ 2$V_0$, alors les diodes $D_2$ et $D_3$ sont passantes, $C$ se décharge de moins en moins puis se charge.
+  \begin{center}
+    \begin{circuitikz}[scale=0.70]
+        \draw (0,0) to[sI,v^={$v_3$},i={$i$}] (0,3)
+        to (3,3)
+        to (3,2.5);
+        \draw (0,0)
+        to (3,0)
+        to (3,0.5);
+
+        \draw (3,2.5) to[D,l^={$D_2$}] (4,1.5);
+        \draw (2,1.5) to[D,l_={$D_3$}] (3,0.5);
+
+
+        \draw (2,1.5) to (1,1.5)
+        to (1,-1)
+        to (8,-1) ;
+
+        \draw (8,3) to[R,l={R=1 k$\Omega$},v={$u_{R_3}$},invert] (8,-1) ;
+
+        \draw (8,3)
+        to (6,3)
+        to (6,1.5)
+        to (4,1.5);
+
+        \draw (0.5,0) node[ground]{};
+        \draw (8,-1) to (12,-1);
+
+        \draw (12,3) to[C,l={C= $1.0\mu F$},v_={$u_C$}] (12,-1) ;
+        \draw (12,3) to (8,3);
+    \end{circuitikz}
+\end{center}
+
+\bigskip
+
+  \item $v_3$ atteint un maximum puis diminue jusqu'à $v_3$ $\leq$ 2$V_0$, les diodes redeviennent toutes bloquantes, $C$ se décharge dans $R$.
+  \begin{center}
+    \begin{circuitikz}[scale=0.70]
+        \draw (0,0) to[sI,v^={$v_3$},i={$i$}] (0,3)
+        to (3,3)
+        to (3,2.5);
+        \draw (0,0)
+        to (3,0)
+        to (3,0.5);
+
+
+
+        \draw (2,1.5) to (1,1.5)
+        to (1,-1)
+        to (8,-1) ;
+
+        \draw (8,3) to[R,l={R=1 k$\Omega$},v={$u_{R_3}$},invert] (8,-1) ;
+
+        \draw (8,3)
+        to (6,3)
+        to (6,1.5)
+        to (4,1.5);
+
+        \draw (0.5,0) node[ground]{};
+        \draw (8,-1) to (12,-1);
+
+        \draw (12,3) to[C,l={C= $1.0\mu F$},v_={$u_C$}] (12,-1) ;
+        \draw (12,3) to (8,3);
+    \end{circuitikz}
+\end{center}
+
+\bigskip
+  
+  \item $v_3$ diminue puis $v_3$ $\leq$ -2$V_0$, alors les diodes $D_1$ et $D_4$ sont passantes, $C$ se décharge de moins en moins puis se charge, on remarque que la polarité constante en sortie du redresseur garantie que l'on charge toujours $C$ avec la même polarité.
+  \begin{center}
+    \begin{circuitikz}[scale=0.70]
+        \draw (0,0) to[sI,v^={$v_3$},i={$i$}] (0,3)
+        to (3,3)
+        to (3,2.5);
+        \draw (0,0)
+        to (3,0)
+        to (3,0.5);
+
+        \draw (2,1.5) to[D,l^={$D_1$}] (3,2.5);
+        \draw (3,0.5) to[D,l_={$D_4$}] (4,1.5);
+
+        \draw (2,1.5) to (1,1.5)
+        to (1,-1)
+        to (8,-1) ;
+
+        \draw (8,3) to[R,l={R=1 k$\Omega$},v={$u_{R_3}$},invert] (8,-1) ;
+
+        \draw (8,3)
+        to (6,3)
+        to (6,1.5)
+        to (4,1.5);
+
+        \draw (0.5,0) node[ground]{};
+        \draw (8,-1) to (12,-1);
+
+        \draw (12,3) to[C,l={C= $1.0\mu F$},v_={$u_C$}] (12,-1) ;
+        \draw (12,3) to (8,3);
+    \end{circuitikz}
+\end{center}
+
+\bigskip
+  
+  \item $v_3$ atteint un minimum puis augmente jusqu'à $v_3$ $\geq$ -2$V_0$, les diodes redeviennent toutes bloquantes, $C$ se décharge dans $R$.
+              On est reconduis à la situation initiale.
+
+\end{itemize}
+
+\newpage
+
+\section{Diodes Zener}
+
+On travaille à présent avec les diodes Zener BZX C7V5 ou BZX C6V8
+
+\subsection{Simple Ecretage}
+
+On étudie le circuit suivant :
+\begin{center}
+\begin{circuitikz}
+  \draw (0,0) to[sI,v^={$u_4$},i={$i$}] (0,3)
+        to[R, l^= {$ R_1 = 470~\Omega$},v_={$u_R$} ] (5,3)
+        to[zDo,l=D1, l={$D$}, v_ = {$u_D$},invert] (5,0)
+        -- (0,0);
+  \draw (2.5,0) node[ground]{};
+  \node[align=right] at (-2,0.5) {sin.\\ $V_A = 10V$\\ $f=1.0~\text{kHz}$};    
+\end{circuitikz}
+\end{center}
+
+On relève les mesures suivantes sur une période :
+
+
+\begin{figure}[h]
+   \centering
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \caption{Tensions $u_4$ et $u_D$ sur une période}
+     \label{fig : Ref Name}
+\end{figure}
+
+\textbf{Analyse}
+
+On observe que : 
+
+\subsection{Double Ecretage}
+
+Intuitivement, il suffirait de brancher une seconde diode dans le sens opposé et parallèlement à la première :
+\begin{center}
+\begin{circuitikz}
+  \draw (0,0) to[sI,v^={$u_4$},i={$i$}] (0,3)
+        to[R, l^= {$ R_1 = 470~\Omega$},v_={$u_R$} ] (5,3)
+        to[zDo,l=D1, l={$D$}, v_ = {$u_D$},invert] (5,0)
+        -- (0,0);
+  \draw (5,3)
+        to (7,3)
+        to[zDo,l=D1, l={$D$}, v_ = {$u_D$}] (7,0)
+        to (5,0) ;
+  \draw (2.5,0) node[ground]{};
+  \node[align=right] at (-2,0.5) {sin.\\ $V_A = 10V$\\ $f=1.0~\text{kHz}$};    
+\end{circuitikz}
+\end{center}
+
+On construit le circuit et on observe les mesures suivantes :
+  
+\begin{figure}[h]
+   \centering
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \caption{Mesures de vérification du double ecretage}
+     \label{fig : double ecretage exp}
+\end{figure}
+
+\section{Diode électro-luminescente}
+
+On étudie le circuit suivant :
+\begin{center}
+\begin{circuitikz}
+  \draw (0,0) to[vsource,v^=VE $E$,i=$i$] (0,3)
+        to[R, l^= {$ R_5 = 1k~\Omega$},v_={$U_R$} ] (5,3)
+        to[leDo,l=D1, l={$D_6$}, v_ = {$U_{D_6}$}] (5,0)
+        -- (0,0);
+  \draw (1.5,0) node[ground]{};
+    
+\end{circuitikz}
+\end{center}
+
+\textbf{a) Allumage}
+
+Experimentalement, la DEL s'allume dès que $E ~>~A~V$, soit $U_{D_6} ~>~A~V$.
+On trouve sur internet :
+\bigskip
+
+
+\textbf{b) Allumage avec moins de résistance}
+
+Experimentalement, la DEL s'allume dès que $E ~>~A~V$, soit $U_{D_6} ~>~A~V$.
+
+
+\end{document}

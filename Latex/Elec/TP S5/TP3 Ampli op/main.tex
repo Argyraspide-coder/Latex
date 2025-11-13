@@ -1,0 +1,396 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+
+\usepackage{enumitem}
+\usepackage[utf8]{inputenc}
+\usepackage{siunitx}
+\usepackage[european, straightvoltages, RPvoltages]{circuitikz}
+\usetikzlibrary{babel}
+
+\counterwithin{figure}{section}
+\counterwithin{figure}{subsection}
+\usepackage[hidelinks]{hyperref}
+
+% chktex-file 1
+% chktex-file 26
+% chktex-file 8
+% chktex-file 35
+% chktex-file 24
+% chktex-file 36
+
+\title{- Rapport de Travaux Pratiques -\\
+Élec. Analogique : \\
+TP3 - Ampli. Op. }
+\author{Gabriel Barbe - Louison Bost}
+\date{07/11/2025}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\bigskip
+
+\textbf{Toutes les références de la table sont liées vers leurs parties correspondantes}
+
+\newpage
+
+\section{Travaux préliminaires}
+
+Dans ce TP, on se propose d'étudier un amplificateur opérationnel classique utilisé dans plusieurs montages classiques.
+
+\subsection{ Caractéristiques techniques de l'AOP}
+
+On relève les caractéristiques suivantes à partir de la Datasheet Microchip :
+
+\begin{itemize}[label=\large - \normalsize]
+  \item \textbf{Bande passante} pour une amplification unitaire : 0 - 10 MHz
+  \item \textbf{Décalage type de tension} à l'entrée, et ses variations selon la température :
+  \begin{figure}[h]
+     \centering
+       \includegraphics[width=\linewidth]{Capture d'écran 2025-11-07 011958.png}
+       \caption{Décalage en entrée pour différentes températures}
+       \label{graphe Datasheet tension entree}
+  \end{figure}
+
+       Sur ce point précis, on observe bien un offset réél, mais de faible valeur, inférieur à 0.5 mV en valeur absolue et dans des conditions extrêmes (125°c).
+       En condition "raisonnables", il est inférieur à 0.15mV. En pratique, cela signifie qu'il faut nous assurer que les amplitudes des signaux à l'entrée seront grands devant ces valeurs.
+
+  \item \textbf{Courant de polarisation} en conditions standard à 25°c : 1 mA
+  \item \textbf{Courant de décalage} en entrée : $\pm$ 1 pA
+  \item \textbf{Impédance} en entrée : $ \sim ~ 10^{13}~\Omega  $ 
+  \item \textbf{Gain} en boucle ouverte : $\sim $ 110 dB 
+  \item \textbf{Le taux de rejection} du mode commun : 90 dB.
+  
+  Comme le nom de ce paramètre n'engendre pas une compréhension immédiate,
+  on se permet de rappeler que cette valeur décrit la capacité 
+  du système à rejeter des signaux présents aux  deux entrée (d'où le commun), par exemple des interférences électro-magnétiques.
+  \item \textbf{Plage d'alimentation} : 2.5V - 5.5V
+  \item \textbf{Tensions de Saturation} pour $V_{DD}~=~5V$ : 15 m$V$ (min), 5.3 $V$ (max).
+  \item \textbf{Slew rate} : 7.0 $V$/$\mu s$, c'est la pente maximale du signal en sortie.
+      \end{itemize}
+
+
+\section{Montage amplificateur non inverseur}
+
+On considère le montage suivant :
+
+\begin{center}
+\begin{circuitikz}
+
+\draw
+  (0, 0) node[op amp] (opamp) {}
+  (opamp.-) to ++(-1,0)
+  ++(0,2)
+  ++(-4,0)
+  to[vsource,v_<={$V_2$},] ++(0,-2) 
+  node[ground]{} ;
+\draw
+  (opamp.-)
+  ++(-1,0)
+  ++(0,2)
+  ++(-4,0)
+  to[R,l={$R_1 = 10$ k$\Omega$},i={$i_{R_1}$},v={$v_{R_1}$}] ++(4,0) ;
+
+\draw
+  (opamp.-) to ++(-1,0)
+  to ++(0,2)
+  to[R,label={$R_2 = 100$ k$\Omega$},i={$i_{R_2}$},v={$v_{R_2}$}] ++(4,0)
+  to ++(0,-2.5)
+  to (opamp.out) ;
+\draw 
+  (opamp.+) to ++(-1,0)
+  to[sI,v^<={$v_E$}] ++(0,-1.5)
+  to[vsource,v^<={$V_1$}] ++(0,-1.5)
+  node[ground]{} ;
+\draw (opamp.up) 
+  to ++(0,0.5)
+  node[tground]{}
+  ++(0,0.2) node[]{5V};
+\draw (opamp.down) 
+  to ++(0,-0.5)
+  node[ground]{};
+\draw (opamp.out) 
+  to ++(2,0)
+  ++(0.5,0) node[]{$v_{out}$};
+
+
+\end{circuitikz}
+\end{center}
+
+Sauf mention contraire, on considère les valeurs suivantes pour le circuit :
+\begin{itemize}
+  \item $R_1$ = 10 k$\Omega$
+  \item $R_2$ = 100 k$\Omega$
+  \item $V_1$ = 2.5 $V$
+  \item $V_2$ = 2.5 $V$
+  \item $v_E$ = $A \cos (2\pi f t)$ , $f$ = 1000 Hz, $A=v_{e,cc}$  = 100 m$V$ 
+\end{itemize}
+
+\subsection{Premier test d'amplification}
+
+On effectue une première amplification, avec les paramètres standards mentionnés. On obtient le résultat suivant :
+
+\begin{figure}[h]
+   \centering
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \caption{Amplification signal standard}
+     \label{Amplification signal standard}
+\end{figure}
+
+\newpage
+
+\textbf{Commentaire : }
+
+On observe ici un gain de X dB, ce qui correspond à la valeur attendue de Y dB (voir \hyperref[sec:annexe]{\underline{étude théorique annexe}})
+
+\subsection{Variation de $V_1$}
+
+\label{sec:retour}
+
+On va fixer la valeur de $V_2$ à 2.5 $V$, et faire varier $V_1$ progressivement de 0 à 5$V$.
+
+On observe alors que :
+
+On en conclue que :
+
+
+\subsection{Variation de $V_2$}
+
+On va fixer la valeur de $V_1$ à 2.5 $V$, et faire varier $V_2$ progressivement de 0 à 5$V$.
+
+On observe alors que :
+
+On en conclue que :
+
+\subsection{Variation de $v_e$}
+
+On va fixer la valeur de $V_1$ et $V_2$ à 2.5 $V$, et faire varier $A$ progressivement de 0 à 5$V$. ($A=v_{e,cc}$  est l'amplitude)
+
+On observe alors que :
+
+On en conclue que :
+
+\subsection{Étude de l'amplification en fonction de l'amplitude en entrée}
+
+\begin{figure}[h]
+   \centering
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \caption{Amplitude en sortie en fonction de l'amplitude en entrée}
+     \label{vs en fonction de ve}
+\end{figure}
+
+\textbf{Commentaire :}
+
+\section{Réponse en fréquence}
+
+\subsection{Diagramme de Bode, $R_2$ = 100 k$\Omega$}
+
+On trace le diagramme de Bode pour la bande 100 Hz - 5 MHz. On porte $A=v_{e,cc}$ à 300 m$V$, tous les autres 
+paramètres du montage sont conservés.
+
+\begin{figure}[h]
+   \centering
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \caption{Diagramme de Bode pour $R_2$ = 100 k$\Omega$}
+     \label{Bode 100k}
+\end{figure}
+
+\newpage
+
+\subsection{Diagramme de Bode, $R_2$ = 330 k$\Omega$}
+
+On trace  à nouveau le diagramme de Bode pour la bande 100 Hz - 5 MHz. On porte la valeur de $R_2$ à 330 k$\Omega$
+ et $A=v_{e,cc}$ à 100 m$V$ tous les autres paramètres du montage sont conservés.
+
+\begin{figure}[h]
+   \centering
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \caption{Diagramme de Bode pour $R_2$ = 330 k$\Omega$}
+     \label{Bode 330k}
+\end{figure}
+
+\subsection{Interpretations sur le produit Gain-Bande}
+
+\newpage
+
+\section{Polarisation automatique}
+
+On considère maintenant le montage suivant :
+
+\begin{center}
+\begin{circuitikz}
+
+\draw
+  (0, 0) node[op amp] (opamp) {}
+  (opamp.-) to ++(-1,0)
+  to ++(0,2)
+  to[R,l={$R_1~=~1$k$\Omega$}] ++(-3,0)
+  to[C,l={$C_1~=~1\mu F$}] ++(-3,0)
+  node[]{}
+  ++(-0.3,0)
+  node[]{$v_e$} ;
+
+\draw
+  (0, 0) node[op amp] (opamp) {}
+  (opamp.-) to ++(-1,0)
+  to ++(0,2)
+  to[R,label={$R_2 = 10$ k$\Omega$}] ++(4,0)
+  to ++(0,-2.5)
+  to (opamp.out) ;
+
+\draw
+  (0, 0) node[op amp] (opamp) {}
+  (opamp.-) to ++(-1,0)
+  to ++(0,4)
+  to[C,label={$C_2 = 1 \eta F$}] ++(4,0)
+  to ++(0,-4) ;
+
+\draw 
+  (opamp.+) to ++(-1,0)
+  node[]{} 
+  ++(-1,0)
+  node[]{$V_1 = 2.5V$} ;
+
+\draw (opamp.up) 
+  to ++(0,0.5)
+  node[tground]{}
+  ++(0,0.2) node[]{5V};
+
+\draw (opamp.down) 
+  to ++(0,-0.5)
+  node[ground]{};
+
+\draw (opamp.out) 
+  to ++(2,0)
+  ++(0.5,0) node[]{$v_{s}$};
+
+
+\end{circuitikz}
+\end{center}
+
+\subsection{Sortie de l'entrée nulle}
+
+On ne met aucune tension en entrée, soit $v_e$ = 0$V$.
+
+On obtient les résultats suivants :
+
+\begin{itemize}
+  \item $V_+$ =
+  \item $V_-$ =
+  \item $V_s$ =
+\end{itemize}
+
+\textbf{Commentaire :}
+
+
+\newpage
+
+\subsection{Diagramme de Bode}
+
+On trace  à nouveau le diagramme de Bode pour la bande 100 Hz - 5 MHz.
+
+\begin{figure}[h]
+   \centering
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \includegraphics[width=0.5\linewidth]{placeholder.jpg}
+     \caption{Diagramme de Bode}
+     \label{Bode 330k}
+\end{figure}
+
+\newpage
+
+\section{Annexe : Étude théorique}
+\label{sec:annexe}
+
+\subsection{Montage amplificateur non-inverseur}
+
+On considère le montage suivant :
+
+\begin{center}
+\begin{circuitikz}
+
+\draw
+  (0, 0) node[op amp] (opamp) {}
+  (opamp.-) to ++(-1,0)
+  ++(0,2)
+  ++(-4,0)
+  to[vsource,v_<={$V_2$},] ++(0,-2) 
+  node[ground]{} ;
+\draw
+  (opamp.-)
+  ++(-1,0)
+  ++(0,2)
+  ++(-4,0)
+  to[R,l={$R_1 = 10$ k$\Omega$},i={$i_{R_1}$},v={$v_{R_1}$}] ++(4,0) ;
+
+\draw
+  (opamp.-) to ++(-1,0)
+  to ++(0,2)
+  to[R,label={$R_2 = 100$ k$\Omega$},i={$i_{R_2}$},v={$v_{R_2}$}] ++(4,0)
+  to ++(0,-2.5)
+  to (opamp.out) ;
+\draw 
+  (opamp.+) to ++(-1,0)
+  to[sI,v^<={$v_E$}] ++(0,-1.5)
+  to[vsource,v^<={$V_1$}] ++(0,-1.5)
+  node[ground]{} ;
+\draw (opamp.up) 
+  to ++(0,0.5)
+  node[tground]{}
+  ++(0,0.2) node[]{5V};
+\draw (opamp.down) 
+  to ++(0,-0.5)
+  node[ground]{};
+\draw (opamp.out) 
+  to ++(2,0)
+  ++(0.5,0) node[]{$v_{out}$};
+
+
+\end{circuitikz}
+\end{center}
+
+On cherche, pour les besoins de l'étude, à déterminer le gain en tension des composantes sinusoïdales.
+On notera $v_+,v_-$ les tensions, respectivement, aux entrées + et - de l'AOP.
+
+On suppose que $v_+~=~v_-$, car le montage est en rétroaction négative. 
+
+De plus, on considère que $i_-~=~0$ car l'impédance en entrée de l'AOP est très grande devant les autres
+ impédance mises en jeu dans le montage
+
+Il vient alors : 
+\[i_{R_2} = i_{R_1} \]
+
+On a ainsi un diviseur de tension ; 
+
+\[v_- = \frac{R_1}{R_1 + R_2} \bigg(v_{out}-V_2\bigg)\]
+
+soit :
+
+\[v_E + V_1 = \frac{1}{11} \bigg(v_{out}-V_2\bigg)\]
+
+Ainsi, on obtient :
+
+\[v_{out} = 11V_1 + V_2 + 11v_E \]
+
+D'où :
+
+\[G_{\text{dB}} = 20\log(11) = 20.8 \text{ dB}\]
+
+Pour le cas $R_2$ = 330 k$\Omega$, on obtient :
+
+\[G_{\text{dB}} = 20\log(34) = 30.6 \text{ dB}\]
+
+Par ailleurs, on peut voir que l'on s'attend à observer des variations linéaires importantes des composantes continues en sorties
+si l'on modifie $V_1$ ou $V_2$
+
+\bigskip
+
+\hyperref[sec:retour]{\underline{Retour à l'étude pratique}}
+
+\end{document}
